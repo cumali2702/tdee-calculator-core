@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TDEE Calculator (EU) — Daily Calorie Needs</title>
+  <meta name="description" content="EU metric TDEE calculator — Mifflin–St Jeor, Harris–Benedict, Katch–McArdle. Clear results, macros and shareable outputs." />
+<link rel="preload" href="/styles.css" as="style" onload="this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="/styles.css"></noscript>
+  <meta property="og:title" content="TDEE Calculator (EU) — Daily Calorie Needs">
+  <meta property="og:description" content="Calculate your daily calorie needs with EU-standard formulas. Metric units, science-backed.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://tdeecalculator.site/">
+  <meta property="og:image" content="https://tdeecalculator.site/assets/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://tdeecalculator.site/">
+  <link rel="alternate" href="https://tdeecalculator.site/" hreflang="en-GB" />
+
+
+  <!-- FAQ JSON-LD -->
+ <script type="application/ld+json">
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "TDEE Calculator (EU)",
+    "url": "https://tdeecalculator.site/",
+    "description": "Calculate your Total Daily Energy Expenditure with EU metric units. Science-backed formulas (Mifflin-St Jeor, Harris-Benedict).",
+    "applicationCategory": "HealthApplication",
+    "operatingSystem": "All",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is TDEE and why does it matter?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "TDEE (Total Daily Energy Expenditure) is the total number of calories you burn each day. Knowing it helps you set targets for weight loss or muscle gain."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Which BMR formula is most accurate?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Mifflin-St Jeor is generally considered the most accurate for most adults today."
+        }
+      }
+    ]
+  }
+]
+</script>
+</head>
+<body>
+  <div class="wrap">
+    <header class="site-header">
+      <div class="brand">
+        <div class="logo" ><a href="https://tdeecalculator.site/">T</a></div>
+        <div>
+          <h1><a href="https://tdeecalculator.site/">TDEE Calculator</a></h1>
+          <p id="subtitle" class="subtitle">EU metric units · Evidence-based formulas</p>
+        </div>
+      </div>
+
+      <div class="controls">
+        <select id="lang" class="select" aria-label="Language">
+          <option value="en-GB" selected>English (UK)</option>
+          <option value="de">Deutsch</option>
+          <option value="fr">Français</option>
+          <option value="tr">Türkçe</option>
+        </select>
+        <a href="privacy.html" class="btn ghost">Privacy</a>
+        <button id="shareBtn" class="btn">Share</button>
+      </div>
+    </header>
+
+    <main class="card" id="calculator" role="main">
+      <div class="card-head">
+        <div>
+          <span class="badge"><a href="https://tdeecalculator.site/">EU Standard</a></span>
+          <h2 id="calcTitle">Calculate your TDEE</h2>
+          <p id="lead" class="lead">Metric units (kg, cm). Choose formula and activity level.</p>
+        </div>
+
+        <div class="formula-select">
+          <label for="formula" class="sr-only">Formula</label>
+          <select id="formula" class="select">
+            <option value="mifflin">Mifflin–St Jeor (recommended)</option>
+            <option value="harris">Harris–Benedict</option>
+            <option value="katch">Katch–McArdle (requires body fat %)</option>
+          </select>
+        </div>
+      </div>
+
+      <form id="form" class="grid" novalidate>
+        <div>
+          <label for="age">Age</label>
+          <input id="age" name="age" type="number" min="10" max="100" required placeholder="e.g. 28">
+        </div>
+
+        <div>
+          <label for="bio">Biological profile</label>
+          <select id="bio" name="bio" required>
+            <option value="">Select</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="height">Height (cm)</label>
+          <input id="height" name="height" type="number" min="120" max="230" required placeholder="e.g. 178">
+        </div>
+
+        <div>
+          <label for="weight">Weight (kg)</label>
+          <input id="weight" name="weight" type="number" min="20" max="250" required placeholder="e.g. 74">
+        </div>
+
+        <div>
+          <label for="bodyfat">Body fat % (optional)</label>
+          <input id="bodyfat" name="bodyfat" type="number" step="0.1" min="3" max="60" placeholder="Only for Katch–McArdle">
+        </div>
+
+        <div>
+          <label for="activity">Activity level</label>
+          <select id="activity" name="activity" required>
+            <option value="sedentary">Sedentary — little or no exercise</option>
+            <option value="light">Light — 1–3 days/week</option>
+            <option value="moderate">Moderate — 3–5 days/week</option>
+            <option value="active">Active — 6–7 days/week</option>
+            <option value="athlete">Athlete — intense daily training</option>
+          </select>
+        </div>
+
+        <div style="grid-column:1/-1;display:flex;gap:12px;align-items:center">
+          <button type="submit" id="calcBtn" class="btn primary">Calculate</button>
+          <button type="reset" id="resetBtn" class="btn ghost">Reset</button>
+
+          <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+            <label for="goal" class="muted">Goal</label>
+            <select id="goal" class="select">
+              <option value="maintain">Maintain</option>
+              <option value="cut10">Cut −10%</option>
+              <option value="cut15">Cut −15%</option>
+              <option value="bulk10">Bulk +10%</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="grid-column:1/-1;display:flex;gap:8px;align-items:center;margin-top:6px">
+          <label for="macroPreset" class="muted" style="margin-right:6px">Macro preset</label>
+          <select id="macroPreset" class="select" style="width:180px">
+            <option value="default">Balanced 45/25/30 (default)</option>
+            <option value="highProtein">High protein 40/35/25</option>
+            <option value="lowCarb">Low carb 30/40/30</option>
+            <option value="custom">Custom</option>
+          </select>
+
+          <div id="macroCustom" style="display:none;gap:8px;align-items:center;margin-left:12px">
+            <input id="macroCarbs" type="number" min="0" max="100" value="45" style="width:64px;padding:8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)" aria-label="Carbs %">
+            <label class="muted">/</label>
+            <input id="macroProtein" type="number" min="0" max="100" value="25" style="width:64px;padding:8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)" aria-label="Protein %">
+            <label class="muted">/</label>
+            <input id="macroFat" type="number" min="0" max="100" value="30" style="width:64px;padding:8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)" aria-label="Fat %">
+            <button id="applyMacro" type="button" class="btn ghost" style="margin-left:8px">Apply</button>
+          </div>
+        </div>
+
+      </form>
+
+      <div id="progress" class="progress" ><i></i></div>
+
+      <section id="result" class="result" aria-live="polite" hidden>
+        <div id="printHeader" class="print-header"  style="display:none">
+          <div class="print-left">
+            <img src="/assets/logo-print.png" alt="TDEE Calculator" class="print-logo">
+          </div>
+          <div class="print-center">
+            <div class="print-title">TDEE Calculator — Result</div>
+            <div class="print-sub">EU metric units · Evidence-based formulas</div>
+          </div>
+          <div class="print-right">
+            <div id="printDate" class="print-date"></div>
+          </div>
+        </div>
+
+        <div class="visual">
+          <div class="donut-wrap" >
+            <svg class="donut" viewBox="0 0 42 42" role="img" aria-label="Macro donut chart">
+              <circle r="15.9155" cx="21" cy="21" fill="transparent" stroke="rgba(0,0,0,0.06)" stroke-width="10"></circle>
+              <circle id="donutCarbs" r="15.9155" cx="21" cy="21" fill="transparent" stroke="var(--accent)" stroke-width="10" stroke-linecap="round"></circle>
+              <circle id="donutProtein" r="15.9155" cx="21" cy="21" fill="transparent" stroke="var(--primary)" stroke-width="10" stroke-linecap="round"></circle>
+              <circle id="donutFat" r="15.9155" cx="21" cy="21" fill="transparent" stroke="rgba(0,0,0,0.06)" stroke-width="10" stroke-linecap="round"></circle>
+            </svg>
+            <div class="donut-center">
+              <div id="donutKcal">—</div>
+              <small>kcal</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="summary">
+          <div class="label-muted">Estimated</div>
+          <div id="tdeeValue" class="tdee-live">— kcal/day</div>
+          <div id="bmrNote" class="muted">BMR: — kcal/day · Formula: —</div>
+
+          <div class="macro-bars">
+            <div class="bar-row">
+              <div class="bar-label">Carbs</div>
+              <div class="bar"><i id="barCarbs" style="width:0%"></i></div>
+              <div class="bar-val" id="carbsVal">— g</div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-label">Protein</div>
+              <div class="bar"><i id="barProtein" style="width:0%"></i></div>
+              <div class="bar-val" id="proteinVal">— g</div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-label">Fat</div>
+              <div class="bar"><i id="barFat" style="width:0%"></i></div>
+              <div class="bar-val" id="fatVal">— g</div>
+            </div>
+          </div>
+
+          <div class="details">
+            <dl>
+              <div><dt>BMI</dt><dd id="bmiVal">—</dd></div>
+              <div><dt>Protein per kg</dt><dd id="protPerKg">— g/kg</dd></div>
+              <div><dt>Safe deficit</dt><dd id="deficitRange">— kcal/day</dd></div>
+              <div><dt>Estimated weekly change</dt><dd id="weeklyChange">—</dd></div>
+            </dl>
+          </div>
+
+          <div class="actions-small">
+            <button id="copyBtn" class="btn ghost">Copy results</button>
+            <button id="openLinkBtn" class="btn">Open share link</button>
+            <button id="exportPdfBtn" class="btn ghost">Export PDF</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="notes">
+        <strong>Notes</strong>
+        <p class="muted">Mifflin–St Jeor is a reliable BMR estimate for adults. Katch–McArdle uses lean mass and requires body fat percentage. These are estimates; consult a professional for personalised advice.</p>
+      </div>
+    </main>
+
+    <article id="guide" class="card" style="margin-top:18px;">
+      <h2>How this TDEE calculator works and how to use it</h2>
+      <p>This calculator estimates your Total Daily Energy Expenditure (TDEE) using established basal metabolic rate (BMR) formulas and an activity multiplier. BMR represents the calories your body needs at rest to maintain vital functions. We offer three formulas: Mifflin–St Jeor (recommended for most adults), Harris–Benedict (a revised classic), and Katch–McArdle (which requires body fat percentage and uses lean mass).</p>
+      <p>To use the tool, enter your age, biological sex, height in centimetres and weight in kilograms. Choose an activity level that best reflects your weekly routine: sedentary, light, moderate, active or athlete. If you know your body fat percentage, select Katch–McArdle for a lean‑mass based estimate. The calculator multiplies BMR by an activity factor to produce TDEE, then applies a macro split to convert calories into grams of carbohydrates, protein and fat.</p>
+      <p>The default macro split is 45% carbohydrates, 25% protein and 30% fat — a balanced starting point for many people. You can customize macro percentages to match dietary preferences (for example, higher protein for strength training or lower carbs for a low‑carb approach). When adjusting macros, ensure the percentages sum to 100% to keep calorie calculations consistent.</p>
+      <p>Use the results as a starting guideline. Track your weight and body composition over 2–4 weeks and adjust calories if you are not seeing the expected changes. A safe calorie deficit for weight loss is typically 10–15% of TDEE; for muscle gain, a modest surplus of around 5–10% is common. Remember that individual metabolism varies — factors like sleep, stress, hormones and training intensity influence outcomes. For medical conditions, pregnancy, or elite athletic planning, consult a registered dietitian or medical professional.</p>
+      <p>This tool is designed for European metric units and provides shareable results so you can save or discuss them with a coach. It is an educational resource and not a substitute for personalized medical advice.</p>
+   <div class="table-responsive" style="margin: 20px 0; overflow-x: auto;">
+  <table style="width:100%; border-collapse: collapse; background: #fff; border-radius: 8px; border: 1px solid rgba(0,0,0,0.06);">
+    <thead>
+      <tr style="background-color: #f8f9fa; border-bottom: 2px solid #eee;">
+        <th style="padding: 12px; text-align: left;">Activity Level</th>
+        <th style="padding: 12px; text-align: left;">Multiplier (PAL)</th>
+        <th style="padding: 12px; text-align: left;">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom: 1px solid #eee;">
+        <td style="padding: 12px; font-weight: bold;">Sedentary</td>
+        <td style="padding: 12px;">1.2</td>
+        <td style="padding: 12px;">Office job, little to no exercise, mostly sitting.</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #eee;">
+        <td style="padding: 12px; font-weight: bold;">Lightly Active</td>
+        <td style="padding: 12px;">1.375</td>
+        <td style="padding: 12px;">Light exercise or sports 1–3 days a week.</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #eee;">
+        <td style="padding: 12px; font-weight: bold;">Moderately Active</td>
+        <td style="padding: 12px;">1.55</td>
+        <td style="padding: 12px;">Moderate exercise or sports 3–5 days a week.</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #eee;">
+        <td style="padding: 12px; font-weight: bold;">Very Active</td>
+        <td style="padding: 12px;">1.725</td>
+        <td style="padding: 12px;">Hard exercise or sports 6–7 days a week.</td>
+      </tr>
+      <tr>
+        <td style="padding: 12px; font-weight: bold;">Extra Active</td>
+        <td style="padding: 12px;">1.9</td>
+        <td style="padding: 12px;">Physical job or very intense training (athlete level).</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+    </article>
+    <section class="faq card">
+  <div class="card-head">
+    <h2>Frequently Asked Questions</h2>
+    <span class="badge">FAQ</span>
+  </div>
+
+  <!-- Tab menu -->
+  <div class="faq-tabs">
+    <button class="faq-tab active" data-target="tab1">What is TDEE?</button>
+    <button class="faq-tab" data-target="tab2">Difference from BMR</button>
+    <button class="faq-tab" data-target="tab3">How to Use Results</button>
+    <button class="faq-tab" data-target="tab4">Example Scenarios</button>
+  </div>
+
+  <!-- Tab content -->
+  <div class="faq-content">
+    <div id="tab1" class="faq-pane active">
+      <p><strong>TDEE (Total Daily Energy Expenditure)</strong> is the total calories your body burns in a day. It combines your Basal Metabolic Rate (BMR) with all daily activities, exercise, and digestion.</p>
+    </div>
+    <div id="tab2" class="faq-pane">
+      <p><strong>BMR</strong> is the energy your body uses at rest. <strong>TDEE</strong> includes BMR plus activity, so it reflects your real‑life calorie needs more accurately.</p>
+    </div>
+    <div id="tab3" class="faq-pane">
+      <p>You can adjust your calorie intake based on your goal: <br>
+      – <em>Weight loss</em>: eat about 10–15% fewer calories than your TDEE. <br>
+      – <em>Maintenance</em>: eat close to your TDEE. <br>
+      – <em>Muscle gain</em>: eat about 10% more than your TDEE.</p>
+    </div>
+    <div id="tab4" class="faq-pane">
+      <p>Example: A 35‑year‑old male, 180 cm tall, 80 kg, with moderate activity has a TDEE of ~2,500 kcal/day. To lose weight, aim for ~2,200 kcal/day. To gain muscle, ~2,700 kcal/day.</p>
+    </div>
+  </div>
+</section>
+<section class="references card" style="margin-top:20px; font-size: 0.9em; border-top: 1px solid #eee; padding-top: 15px;">
+  <h4 style="margin-bottom: 10px; color: #555;">Scientific References & Sources</h4>
+  <ul style="list-style: none; padding: 0; line-height: 1.6;">
+    <li style="margin-bottom: 8px;">
+      <strong>Mifflin-St Jeor Formula:</strong> Mifflin MD, St Jeor ST, et al. "A new predictive equation for resting energy expenditure in healthy individuals." <em>The American Journal of Clinical Nutrition</em>, 1990. 
+      <a href="https://pubmed.ncbi.nlm.nih.gov/2305311/" target="_blank" rel="nofollow noreferrer" style="color: var(--primary);">[PubMed]</a>
+    </li>
+    <li style="margin-bottom: 8px;">
+      <strong>Harris-Benedict Equation:</strong> Roza AM, Shizgal HM. "The Harris Benedict equation reevaluated." <em>The American Journal of Clinical Nutrition</em>, 1984. 
+      <a href="https://pubmed.ncbi.nlm.nih.gov/6741850/" target="_blank" rel="nofollow noreferrer" style="color: var(--primary);">[PubMed]</a>
+    </li>
+    <li style="margin-bottom: 8px;">
+      <strong>Katch-McArdle Formula:</strong> McArdle WD, Katch FI, Katch VL. <em>Exercise Physiology: Nutrition, Energy, and Human Performance</em>. Wolters Kluwer Health, 2014.
+    </li>
+    <li style="margin-bottom: 8px;">
+      <strong>Physical Activity Levels (PAL):</strong> Food and Agriculture Organization (FAO). "Human energy requirements: Report of a Joint FAO/WHO/UNU Expert Consultation." <em>United Nations University</em>, 2001. 
+      <a href="https://www.fao.org/3/y5686e/y5686e00.htm" target="_blank" rel="nofollow noreferrer" style="color: var(--primary);">[FAO/WHO Source]</a>
+    </li>
+  </ul>
+</section>
+
+
+    <footer class="site-footer" style="margin-top:18px">
+      <div>© TDEE Calculator — EU metric units</div>
+      <div><a href="privacy.html" class="muted">Privacy & GDPR</a></div>
+    </footer>
+  </div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
