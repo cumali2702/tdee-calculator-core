@@ -7,7 +7,7 @@ It is designed for speed and accuracy.
 
 ## Live Demo
 You can see this code in action and calculate your daily calorie needs here: 
-👉 [https://tdeecalculator.site](https://tdeecalculator.site)
+👉 [https://dailytdee.com](https://dailytdee.com/)
 
 ## Features
 - Mifflin-St Jeor Formula
